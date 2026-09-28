@@ -6,6 +6,56 @@ import { useParams, useRouter } from 'next/navigation';
 import { QRCodeSVG } from 'qrcode.react';
 import { getPlayerColor } from '@/lib/colors';
 
+const TASKS = [
+  // In-built Games
+  { location_id: 'task-wiring', name: 'Wiring Game', type: 'MINIGAME', pin: 'wiring', venue: 'MCA Top Terrace Stair' },
+  { location_id: 'task-puzzle', name: 'Puzzle Game', type: 'MINIGAME', pin: 'puzzle', venue: 'MCA Near Room D309' },
+  { location_id: 'task-admin-swipe', name: 'Admin Card Swipe', type: 'MINIGAME', pin: 'admin-swipe', venue: 'IEDC Notice Board' },
+  { location_id: 'task-shields', name: 'Prime Shields', type: 'MINIGAME', pin: 'shields', venue: 'Main Block Old Repography' },
+  { location_id: 'task-distributor', name: 'Calibrate Distributor', type: 'MINIGAME', pin: 'distributor', venue: 'Cafeteria' },
+  { location_id: 'task-radio-freq', name: 'Radio Calibration', type: 'MINIGAME', pin: 'radio-freq', venue: 'Physics Lab' },
+  { location_id: 'task-circuit-bypass', name: 'Circuit Bypass', type: 'MINIGAME', pin: 'circuit-bypass', venue: 'MCA Entrance' },
+  { location_id: 'task-pressure-valves', name: 'Pressure Valves', type: 'MINIGAME', pin: 'pressure-valves', venue: 'MainBlock Fire Extinguisher' },
+  { location_id: 'task-orbital-defense', name: 'Orbital Defense', type: 'MINIGAME', pin: 'orbital-defense', venue: 'MainBlock - A107' },
+  { location_id: 'task-dna-anomaly', name: 'DNA Anomaly Scan', type: 'MINIGAME', pin: 'dna-anomaly', venue: 'Chemistry Lab' },
+  { location_id: 'task-nav-align', name: 'Align Navigation', type: 'MINIGAME', pin: 'nav-align', venue: 'Normal Parking' },
+  { location_id: 'task-fuel-transfer', name: 'Fuel Transfer', type: 'MINIGAME', pin: 'fuel-transfer', venue: 'Generator' },
+  { location_id: 'task-garbage-chute', name: 'Empty Garbage Chute', type: 'MINIGAME', pin: 'garbage-chute', venue: 'Waste Bin Near Library' },
+  { location_id: 'task-coolant-bypass', name: 'Coolant Thruster Bypass', type: 'MINIGAME', pin: 'coolant-bypass', venue: 'Staff Parking' },
+  { location_id: 'task-basket-ball', name: 'Basketball Hoop Drop', type: 'MINIGAME', pin: 'basket-ball', venue: 'Basketball Court' },
+
+  // Physical Games
+  { location_id: 'task-qr-drawing', name: 'QR Scanning - Drawing Room', type: 'SCAN', pin: '', venue: 'MCA Drawing Room D209' },
+  { location_id: 'task-bulb', name: 'Bulb Testing', type: 'PIN', pin: '2222', venue: 'MCA Electrical Room (2nd floor)' },
+  { location_id: 'task-cleaning', name: 'Cleaning', type: 'PIN', pin: '3333', venue: 'MCA Near D209' },
+  { location_id: 'task-find-object', name: 'Find Object', type: 'PIN', pin: '4444', venue: 'Near Physics Lab (under stair)' },
+  { location_id: 'task-book-game', name: 'Book Game', type: 'PIN', pin: '5555', venue: 'Library Front' },
+  { location_id: 'task-throw', name: 'Ball Throw', type: 'PIN', pin: '6666', venue: 'Near Chemistry Lab' },
+  { location_id: 'task-solar', name: 'Solar Count', type: 'PIN', pin: '7777', venue: 'MCA Upper Terrace' },
+  { location_id: 'task-potato', name: 'Potato Race', type: 'PIN', pin: '8888', venue: 'MCA Side Terrace' },
+  { location_id: 'task-arrange-ball', name: 'Arrange Ball', type: 'PIN', pin: '9999', venue: 'Near IEDC Town' },
+  { location_id: 'task-reactor', name: 'Reactor Game', type: 'MINIGAME', pin: 'reactor', venue: 'MCA 2nd Floor Toilet Near D309' },
+  { location_id: 'task-die-game', name: 'Die Game', type: 'PIN', pin: '1616', venue: 'Normal Parking' },
+  { location_id: 'task-football', name: 'Football Game', type: 'PIN', pin: '1717', venue: 'Basketball Court' },
+  { location_id: 'task-ring-throw', name: 'Ring Throw', type: 'PIN', pin: '1818', venue: 'New Parking' },
+  { location_id: 'task-single-leg', name: 'Single Leg Stand (40s)', type: 'PIN', pin: '1919', venue: 'Staff Parking' },
+  { location_id: 'task-memory-game', name: 'Memory Game', type: 'PIN', pin: '2020', venue: 'Main Block Reception' },
+  { location_id: 'task-stone-paper-scissors', name: 'Stone Paper Scissors', type: 'PIN', pin: '3131', venue: 'Main Block Reception' },
+  { location_id: 'task-paint-fight', name: 'Paint Fight', type: 'PIN', pin: '2121', venue: 'Quilandi Bus Parking' },
+  { location_id: 'task-hammer-hit', name: 'Hammer Hit', type: 'PIN', pin: '1010', venue: 'Quilandi Bus Parking' },
+  { location_id: 'task-coin-toss', name: 'Coin Toss (5 Heads)', type: 'PIN', pin: '2323', venue: 'Cafeteria' },
+  { location_id: 'task-ballon-race', name: 'Balloon Race', type: 'PIN', pin: '2424', venue: 'Ladies Hostel Steps' },
+  { location_id: 'task-cup-rebuild', name: 'Cup Build', type: 'PIN', pin: '2525', venue: 'MCA Lecture Hall' },
+  { location_id: 'task-bottle-flip', name: 'Bottle Flip', type: 'PIN', pin: '2626', venue: 'Ladies Hostel Entrance Parking' },
+  { location_id: 'task-fill-bottle', name: 'Fill The Bottle', type: 'PIN', pin: '2727', venue: 'Main Block New Filter' },
+  { location_id: 'task-paper-plane', name: 'Paper Plane Target', type: 'PIN', pin: '2828', venue: 'MCA Ground Floor' },
+  { location_id: 'task-color-picking', name: 'Color Picking', type: 'PIN', pin: '2929', venue: 'MCA Cafeteria + Junction' },
+  { location_id: 'task-pen-flight', name: 'Pen Fight', type: 'PIN', pin: '3030', venue: 'MainBlock - A107' },
+  { location_id: 'task-stack-cups', name: 'Stack Cups', type: 'PIN', pin: '7878', venue: 'MCA D309' },
+  { location_id: 'task-light-finger', name: 'Light Finger', type: 'PIN', pin: '3232', venue: 'Quilandi Bus Parking' },
+  { location_id: 'task-fruit-duel', name: 'Fruit Duel', type: 'PIN', pin: '3434', venue: 'Quilandi Bus Parking' },
+];
+
 export default function PrintBadges() {
   const params = useParams();
   const gameId = params.gameId as string;
@@ -13,6 +63,8 @@ export default function PrintBadges() {
 
   const [players, setPlayers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [badgeCount, setBadgeCount] = useState<number>(30);
+  const [printFilter, setPrintFilter] = useState<'all' | 'badges'>('badges');
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -40,63 +92,6 @@ export default function PrintBadges() {
     fetchGame();
   }, [gameId, router]);
 
-  if (loading) {
-    return <div className="p-8 text-center text-black bg-white">Loading badges...</div>;
-  }
-
-  const TASKS = [
-    // In-built Games
-    { location_id: 'task-wiring', name: 'Wiring Game', type: 'MINIGAME', pin: 'wiring', venue: 'MCA Top Terrace Stair' },
-    { location_id: 'task-puzzle', name: 'Puzzle Game', type: 'MINIGAME', pin: 'puzzle', venue: 'MCA Near Room D309' },
-    { location_id: 'task-admin-swipe', name: 'Admin Card Swipe', type: 'MINIGAME', pin: 'admin-swipe', venue: 'IEDC Notice Board' },
-    { location_id: 'task-shields', name: 'Prime Shields', type: 'MINIGAME', pin: 'shields', venue: 'Main Block Old Repography' },
-    { location_id: 'task-distributor', name: 'Calibrate Distributor', type: 'MINIGAME', pin: 'distributor', venue: 'Cafeteria' },
-    { location_id: 'task-radio-freq', name: 'Radio Calibration', type: 'MINIGAME', pin: 'radio-freq', venue: 'Physics Lab' },
-    { location_id: 'task-circuit-bypass', name: 'Circuit Bypass', type: 'MINIGAME', pin: 'circuit-bypass', venue: 'MCA Entrance' },
-    { location_id: 'task-pressure-valves', name: 'Pressure Valves', type: 'MINIGAME', pin: 'pressure-valves', venue: 'MainBlock Fire Extinguisher' },
-    { location_id: 'task-orbital-defense', name: 'Orbital Defense', type: 'MINIGAME', pin: 'orbital-defense', venue: 'MainBlock - A107' },
-    { location_id: 'task-dna-anomaly', name: 'DNA Anomaly Scan', type: 'MINIGAME', pin: 'dna-anomaly', venue: 'Chemistry Lab' },
-    { location_id: 'task-nav-align', name: 'Align Navigation', type: 'MINIGAME', pin: 'nav-align', venue: 'Normal Parking' },
-    { location_id: 'task-fuel-transfer', name: 'Fuel Transfer', type: 'MINIGAME', pin: 'fuel-transfer', venue: 'Generator' },
-    { location_id: 'task-garbage-chute', name: 'Empty Garbage Chute', type: 'MINIGAME', pin: 'garbage-chute', venue: 'Waste Bin Near Library' },
-    { location_id: 'task-coolant-bypass', name: 'Coolant Thruster Bypass', type: 'MINIGAME', pin: 'coolant-bypass', venue: 'Staff Parking' },
-    { location_id: 'task-basket-ball', name: 'Basketball Hoop Drop', type: 'MINIGAME', pin: 'basket-ball', venue: 'Basketball Court' },
-
-    // Physical Games
-    { location_id: 'task-qr-drawing', name: 'QR Scanning - Drawing Room', type: 'SCAN', pin: '', venue: 'MCA Drawing Room D209' },
-    { location_id: 'task-bulb', name: 'Bulb Testing', type: 'PIN', pin: '2222', venue: 'MCA Electrical Room (2nd floor)' },
-    { location_id: 'task-cleaning', name: 'Cleaning', type: 'PIN', pin: '3333', venue: 'MCA Near D209' },
-    { location_id: 'task-find-object', name: 'Find Object', type: 'PIN', pin: '4444', venue: 'Near Physics Lab (under stair)' },
-    { location_id: 'task-book-game', name: 'Book Game', type: 'PIN', pin: '5555', venue: 'Library Front' },
-    { location_id: 'task-throw', name: 'Ball Throw', type: 'PIN', pin: '6666', venue: 'Near Chemistry Lab' },
-    { location_id: 'task-solar', name: 'Solar Count', type: 'PIN', pin: '7777', venue: 'MCA Upper Terrace' },
-    { location_id: 'task-potato', name: 'Potato Race', type: 'PIN', pin: '8888', venue: 'MCA Side Terrace' },
-    { location_id: 'task-arrange-ball', name: 'Arrange Ball', type: 'PIN', pin: '9999', venue: 'Near IEDC Town' },
-    { location_id: 'task-reactor', name: 'Reactor Game', type: 'MINIGAME', pin: 'reactor', venue: 'MCA 2nd Floor Toilet Near D309' },
-    { location_id: 'task-die-game', name: 'Die Game', type: 'PIN', pin: '1616', venue: 'Normal Parking' },
-    { location_id: 'task-football', name: 'Football Game', type: 'PIN', pin: '1717', venue: 'Basketball Court' },
-    { location_id: 'task-ring-throw', name: 'Ring Throw', type: 'PIN', pin: '1818', venue: 'New Parking' },
-    { location_id: 'task-single-leg', name: 'Single Leg Stand (40s)', type: 'PIN', pin: '1919', venue: 'Staff Parking' },
-    { location_id: 'task-memory-game', name: 'Memory Game', type: 'PIN', pin: '2020', venue: 'Main Block Reception' },
-    { location_id: 'task-stone-paper-scissors', name: 'Stone Paper Scissors', type: 'PIN', pin: '3131', venue: 'Main Block Reception' },
-    { location_id: 'task-paint-fight', name: 'Paint Fight', type: 'PIN', pin: '2121', venue: 'Quilandi Bus Parking' },
-    { location_id: 'task-hammer-hit', name: 'Hammer Hit', type: 'PIN', pin: '1010', venue: 'Quilandi Bus Parking' },
-    { location_id: 'task-coin-toss', name: 'Coin Toss (5 Heads)', type: 'PIN', pin: '2323', venue: 'Cafeteria' },
-    { location_id: 'task-ballon-race', name: 'Balloon Race', type: 'PIN', pin: '2424', venue: 'Ladies Hostel Steps' },
-    { location_id: 'task-cup-rebuild', name: 'Cup Build', type: 'PIN', pin: '2525', venue: 'MCA Lecture Hall' },
-    { location_id: 'task-bottle-flip', name: 'Bottle Flip', type: 'PIN', pin: '2626', venue: 'Ladies Hostel Entrance Parking' },
-    { location_id: 'task-fill-bottle', name: 'Fill The Bottle', type: 'PIN', pin: '2727', venue: 'Main Block New Filter' },
-    { location_id: 'task-paper-plane', name: 'Paper Plane Target', type: 'PIN', pin: '2828', venue: 'MCA Ground Floor' },
-    { location_id: 'task-color-picking', name: 'Color Picking', type: 'PIN', pin: '2929', venue: 'MCA Cafeteria + Junction' },
-    { location_id: 'task-pen-flight', name: 'Pen Fight', type: 'PIN', pin: '3030', venue: 'MainBlock - A107' },
-    { location_id: 'task-stack-cups', name: 'Stack Cups', type: 'PIN', pin: '7878', venue: 'MCA D309' },
-    { location_id: 'task-light-finger', name: 'Light Finger', type: 'PIN', pin: '3232', venue: 'Quilandi Bus Parking' },
-    { location_id: 'task-fruit-duel', name: 'Fruit Duel', type: 'PIN', pin: '3434', venue: 'Quilandi Bus Parking' },
-  ];
-
-  const [badgeCount, setBadgeCount] = useState<number>(30);
-  const [printFilter, setPrintFilter] = useState<'all' | 'badges'>('badges');
-
   const BADGES_PER_PAGE = 6;
   const totalPages = Math.ceil(badgeCount / BADGES_PER_PAGE);
   const badgePages = Array.from({ length: totalPages }, (_, pageIdx) => {
@@ -111,6 +106,10 @@ export default function PrintBadges() {
       window.print();
     }, 150);
   };
+
+  if (loading) {
+    return <div className="p-8 text-center text-black bg-white">Loading badges...</div>;
+  }
 
   return (
     <div className="bg-white min-h-screen p-6 sm:p-8 text-black font-sans">
