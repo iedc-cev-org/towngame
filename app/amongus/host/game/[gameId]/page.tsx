@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/amongus/supabase/client';
@@ -39,7 +39,7 @@ export default function HostDashboard() {
           elapsed += Date.now() - new Date(game.last_resume_time).getTime();
         }
       }
-      const remaining = Math.max(0, (game.game_duration_ms || 1800000) - elapsed);
+      const remaining = Math.max(0, (game.game_duration_ms || 3600000) - elapsed);
       return remaining;
     };
 
@@ -78,8 +78,12 @@ export default function HostDashboard() {
   const formatTime = (ms: number | null) => {
     if (ms === null) return '--:--';
     const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 

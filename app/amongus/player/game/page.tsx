@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -115,6 +115,9 @@ export default function PlayerGameDashboard() {
     'task-balloon-race': 'Ladies Hostel Steps',
     'task-hammer-hit': 'Quilandi Bus Parking',
     'task-paint-fight': 'Quilandi Bus Parking',
+    'task-light-finger': 'Quilandi Bus Parking',
+    'task-fruit-duel': 'Quilandi Bus Parking',
+    'task-fruit-dual': 'Quilandi Bus Parking',
     'task-123-games': 'Quilandi Bus Parking',
     'task-123-game': 'Quilandi Bus Parking',
   };
@@ -122,8 +125,12 @@ export default function PlayerGameDashboard() {
   const formatTime = (ms: number | null) => {
     if (ms === null) return '--:--';
     const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
@@ -138,7 +145,7 @@ export default function PlayerGameDashboard() {
           elapsed += Date.now() - new Date(game.last_resume_time).getTime();
         }
       }
-      return Math.max(0, (game.game_duration_ms || 1800000) - elapsed);
+      return Math.max(0, (game.game_duration_ms || 3600000) - elapsed);
     };
 
     setTimeLeft(calculateRemaining());

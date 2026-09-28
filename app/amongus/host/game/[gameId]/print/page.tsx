@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/amongus/supabase/client';
@@ -90,49 +90,205 @@ export default function PrintBadges() {
     { location_id: 'task-color-picking', name: 'Color Picking', type: 'PIN', pin: '2929', venue: 'MCA Cafeteria + Junction' },
     { location_id: 'task-pen-flight', name: 'Pen Fight', type: 'PIN', pin: '3030', venue: 'MainBlock - A107' },
     { location_id: 'task-stack-cups', name: 'Stack Cups', type: 'PIN', pin: '7878', venue: 'MCA D309' },
+    { location_id: 'task-light-finger', name: 'Light Finger', type: 'PIN', pin: '3232', venue: 'Quilandi Bus Parking' },
+    { location_id: 'task-fruit-duel', name: 'Fruit Duel', type: 'PIN', pin: '3434', venue: 'Quilandi Bus Parking' },
   ];
 
+  const [badgeCount, setBadgeCount] = useState<number>(30);
+  const [printFilter, setPrintFilter] = useState<'all' | 'badges'>('badges');
+
+  const BADGES_PER_PAGE = 6;
+  const totalPages = Math.ceil(badgeCount / BADGES_PER_PAGE);
+  const badgePages = Array.from({ length: totalPages }, (_, pageIdx) => {
+    const start = pageIdx * BADGES_PER_PAGE;
+    const end = Math.min(start + BADGES_PER_PAGE, badgeCount);
+    return Array.from({ length: end - start }, (_, i) => start + i);
+  });
+
+  const handlePrint = (filter: 'all' | 'badges') => {
+    setPrintFilter(filter);
+    setTimeout(() => {
+      window.print();
+    }, 150);
+  };
+
   return (
-    <div className="bg-white min-h-screen p-8 text-black font-sans">
-      <div className="mb-8 print:hidden flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">Print Player Badges</h1>
-          <p className="text-gray-600">Print this page and have players wear their unique QR codes.</p>
-        </div>
-        <button
-          onClick={() => window.print()}
-          className="bg-black text-white px-6 py-2 rounded-lg font-bold"
-        >
-          Print Now
-        </button>
-      </div>
+    <div className="bg-white min-h-screen p-6 sm:p-8 text-black font-sans">
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+        @media print {
+          @page {
+            size: A4 portrait;
+            margin: 8mm 10mm;
+          }
+          html, body {
+            background: white !important;
+            color: black !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
+          .badge-sheet-wrapper {
+            page-break-after: always !important;
+            break-after: page !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .badge-sheet-page {
+            height: 255mm !important;
+            max-height: 255mm !important;
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            grid-template-rows: repeat(3, 1fr) !important;
+            gap: 6mm !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+          }
+          .badge-sheet-card {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            height: 100% !important;
+            max-height: 80mm !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            padding: 3.5mm 4mm !important;
+            border-width: 3.5px !important;
+            border-radius: 6px !important;
+          }
+          .badge-sheet-card h2 {
+            font-size: 14pt !important;
+            line-height: 1.1 !important;
+            margin-bottom: 1mm !important;
+          }
+          .badge-sheet-card p {
+            font-size: 8pt !important;
+            margin-bottom: 1mm !important;
+          }
+          .badge-sheet-card .qr-container {
+            padding: 1.5mm !important;
+            margin: 1mm 0 !important;
+          }
+          .badge-sheet-card .id-label {
+            font-size: 8.5pt !important;
+            margin-top: 1mm !important;
+          }
+        }
+      `,
+        }}
+      />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 print:grid-cols-3 print:gap-4 print:m-0">
-        {Array.from({ length: 30 }).map((_, i) => {
-          const badgeNum = (i + 1).toString().padStart(2, '0');
-          const uuid = `00000000-0000-0000-0000-0000000000${badgeNum}`;
-          const colorInfo = getPlayerColor(uuid);
-          return (
-            <div key={`badge-${i + 1}`} className="border-4 p-4 flex flex-col items-center justify-center break-inside-avoid shadow-lg print:shadow-none bg-white h-64 relative" style={{ borderColor: colorInfo.hex }}>
-              <h2 className="text-xl font-black uppercase tracking-widest mb-2 truncate w-full text-center" style={{ color: colorInfo.hex }}>BADGE {i + 1}</h2>
-              <p className="text-[10px] font-bold uppercase tracking-widest mb-4" style={{ color: colorInfo.hex }}>{colorInfo.name}</p>
-              <div className="bg-white p-2 border-2" style={{ borderColor: colorInfo.hex }}>
-                <QRCodeSVG
-                  value={uuid}
-                  size={100}
-                  level="M"
-                  includeMargin={false}
-                />
-              </div>
-              <div className="mt-4 text-[10px] text-gray-500 font-mono absolute bottom-2">
-                ID: {badgeNum}
-              </div>
+      {/* Control Bar (hidden in print) */}
+      <div className="mb-8 print:hidden bg-gray-50 border-2 border-gray-300 rounded-xl p-5 shadow-sm">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-black uppercase tracking-wider text-gray-900">
+              Print Player Badges
+            </h1>
+            <p className="text-sm text-gray-600 mt-1">
+              Formatted for standard A4 printing — <strong className="text-black font-bold">strictly 6 badges per page</strong> (2 columns × 3 rows).
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 bg-white px-3 py-1.5 border border-gray-300 rounded-lg text-sm">
+              <span className="font-bold text-gray-700">Badges:</span>
+              <select
+                value={badgeCount}
+                onChange={(e) => setBadgeCount(Number(e.target.value))}
+                className="font-bold text-black bg-transparent outline-none cursor-pointer"
+              >
+                <option value={6}>6 (1 Page)</option>
+                <option value={12}>12 (2 Pages)</option>
+                <option value={18}>18 (3 Pages)</option>
+                <option value={24}>24 (4 Pages)</option>
+                <option value={30}>30 (5 Pages)</option>
+              </select>
             </div>
-          );
-        })}
+
+            <button
+              onClick={() => handlePrint('badges')}
+              className="bg-black hover:bg-gray-800 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow transition-colors flex items-center gap-2"
+            >
+              Print Badges (6 / Page)
+            </button>
+
+            <button
+              onClick={() => handlePrint('all')}
+              className="bg-white hover:bg-gray-100 text-gray-800 border-2 border-gray-400 px-4 py-2 rounded-lg font-bold text-sm transition-colors"
+            >
+              Print All Sheets
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-16 print:mt-12 break-before-page">
+      {/* Badge Sheets (6 badges per page) */}
+      <div className="badge-sheets-container">
+        {badgePages.map((page, pageIdx) => (
+          <div key={`badge-sheet-${pageIdx}`} className="badge-sheet-wrapper mb-10 print:mb-0">
+            <div className="print:hidden flex items-center justify-between text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 pb-1 border-b border-gray-200">
+              <span>Page {pageIdx + 1} of {badgePages.length}</span>
+              <span>Badges {page[0] + 1} – {page[page.length - 1] + 1} (6 Badges per Sheet)</span>
+            </div>
+
+            <div className="badge-sheet-page grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {page.map((i) => {
+                const badgeNum = (i + 1).toString().padStart(2, '0');
+                const uuid = `00000000-0000-0000-0000-0000000000${badgeNum}`;
+                const colorInfo = getPlayerColor(uuid);
+                return (
+                  <div
+                    key={`badge-${i + 1}`}
+                    className="badge-sheet-card border-4 p-4 flex flex-col items-center justify-between break-inside-avoid shadow-sm print:shadow-none bg-white rounded-xl relative min-h-[220px]"
+                    style={{ borderColor: colorInfo.hex }}
+                  >
+                    <div className="text-center w-full">
+                      <h2
+                        className="text-xl font-black uppercase tracking-widest truncate w-full text-center"
+                        style={{ color: colorInfo.hex }}
+                      >
+                        BADGE {i + 1}
+                      </h2>
+                      <p
+                        className="text-[10px] font-bold uppercase tracking-widest"
+                        style={{ color: colorInfo.hex }}
+                      >
+                        {colorInfo.name}
+                      </p>
+                    </div>
+
+                    <div
+                      className="qr-container bg-white p-2 border-2 rounded-lg my-2"
+                      style={{ borderColor: colorInfo.hex }}
+                    >
+                      <QRCodeSVG
+                        value={uuid}
+                        size={105}
+                        level="M"
+                        includeMargin={false}
+                      />
+                    </div>
+
+                    <div className="id-label text-center">
+                      <span className="text-[11px] text-gray-600 font-mono font-bold tracking-wider">
+                        ID: {badgeNum}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className={`mt-16 print:mt-12 break-before-page ${printFilter === 'badges' ? 'print:hidden' : ''}`}>
         <div className="mb-8 print:hidden">
           <h2 className="text-2xl font-bold">Print Task Stations</h2>
           <p className="text-gray-600">Tape these around the venue for Crewmates to scan.</p>
@@ -178,7 +334,7 @@ export default function PrintBadges() {
         </div>
       </div>
 
-      <div className="mt-16 print:mt-12 break-before-page">
+      <div className={`mt-16 print:mt-12 break-before-page ${printFilter === 'badges' ? 'print:hidden' : ''}`}>
         <div className="mb-8 print:hidden">
           <h2 className="text-2xl font-bold">Referee PIN Codes</h2>
           <p className="text-gray-600">Give this sheet to the referees so they can hand out PINs after physical games.</p>
@@ -201,7 +357,7 @@ export default function PrintBadges() {
         </div>
       </div>
 
-      <div className="mt-16 print:mt-12 break-before-page">
+      <div className={`mt-16 print:mt-12 break-before-page ${printFilter === 'badges' ? 'print:hidden' : ''}`}>
         <div className="mb-8 print:hidden">
           <h2 className="text-2xl font-bold">Fake QRs (For QR Drawing Room Game)</h2>
           <p className="text-gray-600">Place these around the room to confuse Crewmates.</p>

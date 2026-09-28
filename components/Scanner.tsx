@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5QrcodeScanner, Html5QrcodeScanType } from 'html5-qrcode';
 import { X, Camera } from 'lucide-react';
 
 interface ScannerProps {
@@ -36,7 +36,13 @@ export default function Scanner({
     if (!scannerRef.current) {
       scannerRef.current = new Html5QrcodeScanner(
         "qr-reader",
-        { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 },
+        { 
+          fps: 10, 
+          qrbox: { width: 250, height: 250 }, 
+          aspectRatio: 1.0,
+          supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
+          rememberLastUsedCamera: true
+        },
         false
       );
 
@@ -97,6 +103,24 @@ export default function Scanner({
           </p>
         </div>
       )}
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+        #qr-reader__dashboard_section_swaplink,
+        #qr-reader__filescan_input,
+        #qr-reader__status_span,
+        #qr-reader img[alt="Info icon"] {
+          display: none !important;
+        }
+        #qr-reader {
+          border: none !important;
+        }
+        #qr-reader__scan_region {
+          background: black !important;
+        }
+      `,
+        }}
+      />
     </div>
   );
 }

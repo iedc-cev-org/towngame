@@ -1,4 +1,4 @@
-﻿'use server';
+'use server';
 
 import { supabaseAdmin } from '@/lib/amongus/supabase/server';
 
@@ -109,6 +109,8 @@ export async function startGame(gameId: string, hostToken: string) {
       { location_id: 'task-color-picking', name: 'Color picking', type: 'PIN', pin: '2929' },
       { location_id: 'task-pen-flight', name: 'Pen fight', type: 'PIN', pin: '3030' },
       { location_id: 'task-stack-cups', name: 'Stack cups', type: 'PIN', pin: '7878' },
+      { location_id: 'task-light-finger', name: 'Light Finger', type: 'PIN', pin: '3232' },
+      { location_id: 'task-fruit-duel', name: 'Fruit Duel', type: 'PIN', pin: '3434' },
     ];
 
     const TASKS_PER_PLAYER = 4;
@@ -152,7 +154,7 @@ export async function startGame(gameId: string, hostToken: string) {
         total_tasks: totalTasks,
         game_elapsed_ms: 0,
         last_resume_time: new Date().toISOString(),
-        game_duration_ms: 30 * 60 * 1000,
+        game_duration_ms: 60 * 60 * 1000,
         meeting_type: null
       })
       .eq('id', gameId);
@@ -334,15 +336,27 @@ export async function callMeeting(gameId: string, playerToken: string) {
     const { data: game } = await supabaseAdmin.from('games').select('status, last_resume_time, game_elapsed_ms').eq('id', gameId).single();
     if (!game || game.status !== 'ACTIVE') return { error: 'You can only call a meeting during an active game.' };
 
+    // Check emergency meeting count limit (max 3 per game)
+    const { count: emergencyCount } = await supabaseAdmin
+      .from('game_events')
+      .select('id', { count: 'exact', head: true })
+      .eq('game_id', gameId)
+      .eq('event_type', 'MEETING')
+      .ilike('message', '%Emergency Meeting%');
+
+    if ((emergencyCount || 0) >= 3) {
+      return { error: 'Maximum emergency meetings limit reached! (All 3 meetings used)' };
+    }
+
     // Clear old votes
     await supabaseAdmin
       .from('votes')
       .delete()
       .eq('game_id', gameId);
 
-    // Set meeting state (expires in 7 minutes)
+    // Set meeting state (expires in 10 minutes)
     const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + 7);
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10);
 
     let newElapsed = game.game_elapsed_ms || 0;
     if (game.last_resume_time) {
@@ -853,15 +867,27 @@ export async function publicCallMeeting(joinCode: string) {
     if (gameError || !game) return { error: 'Game not found' };
     if (game.status !== 'ACTIVE') return { error: 'You can only call a meeting during an active game.' };
 
+    // Check emergency meeting count limit (max 3 per game)
+    const { count: emergencyCount } = await supabaseAdmin
+      .from('game_events')
+      .select('id', { count: 'exact', head: true })
+      .eq('game_id', game.id)
+      .eq('event_type', 'MEETING')
+      .ilike('message', '%Emergency Meeting%');
+
+    if ((emergencyCount || 0) >= 3) {
+      return { error: 'Maximum emergency meetings limit reached! (All 3 meetings used)' };
+    }
+
     // Clear old votes
     await supabaseAdmin
       .from('votes')
       .delete()
       .eq('game_id', game.id);
 
-    // Set meeting state (expires in 7 minutes)
+    // Set meeting state (expires in 10 minutes)
     const expiresAt = new Date();
-    expiresAt.setMinutes(expiresAt.getMinutes() + 7);
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10);
 
     let newElapsed = game.game_elapsed_ms || 0;
     if (game.last_resume_time) {
@@ -990,12 +1016,16 @@ export async function reportDeadBody(gameId: string, reporterToken: string, dead
       .delete()
       .eq('game_id', gameId);
 
+    // Set meeting state (expires in 10 minutes)
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 10);
+
     const { error: updateError } = await supabaseAdmin
       .from('games')
       .update({ 
         status: 'MEETING',
         meeting_called_by: reporter.id,
-        meeting_expires_at: null,
+        meeting_expires_at: expiresAt.toISOString(),
         meeting_type: 'BODY_REPORT'
       })
       .eq('id', gameId);

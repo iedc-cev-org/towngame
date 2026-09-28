@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { AlertOctagon, ShieldAlert, Loader2, User, Skull, X } from 'lucide-react';
@@ -18,6 +18,7 @@ export default function EmergencyScreen() {
   const [votes, setVotes] = useState<any[]>([]);
   
   const [cooldown, setCooldown] = useState(0);
+  const [emergencyCount, setEmergencyCount] = useState(0);
   const prevGameStatus = useRef<string | null>(null);
   
   // Voting UI State
@@ -129,6 +130,15 @@ export default function EmergencyScreen() {
         gameIdRef = gameData.id;
         setGame(gameData);
         
+        // Fetch emergency meetings count
+        const { count: emCount } = await supabase
+          .from('game_events')
+          .select('id', { count: 'exact', head: true })
+          .eq('game_id', gameData.id)
+          .eq('event_type', 'MEETING')
+          .ilike('message', '%Emergency Meeting%');
+        if (emCount !== null && isSubscribed) setEmergencyCount(emCount);
+
         // Always fetch players so we have them ready
         const { data: playersData } = await supabase.from('game_players').select('*').eq('game_id', gameData.id);
         if (playersData) setPlayers(playersData);
@@ -151,6 +161,17 @@ export default function EmergencyScreen() {
         if (!gameIdRef) gameIdRef = payload.new.id;
         
         setGame(payload.new);
+        if (payload.new.status === 'MEETING' || payload.new.status === 'ACTIVE') {
+          supabase
+            .from('game_events')
+            .select('id', { count: 'exact', head: true })
+            .eq('game_id', payload.new.id)
+            .eq('event_type', 'MEETING')
+            .ilike('message', '%Emergency Meeting%')
+            .then(res => {
+              if (res.count !== null) setEmergencyCount(res.count);
+            });
+        }
         if (payload.new.status === 'MEETING') {
           setStatus('IDLE');
           setSelectedVoter(null);
@@ -373,6 +394,24 @@ export default function EmergencyScreen() {
           />
         </div>
 
+        {/* Emergency Meetings Counter */}
+        {game && (
+          <div className="mb-6 flex flex-col items-center gap-1 animate-in fade-in">
+            <span className={`text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full border ${
+              emergencyCount >= 3 
+                ? 'bg-red-500/20 border-red-500 text-red-400' 
+                : 'bg-yellow-500/20 border-yellow-500/50 text-yellow-300'
+            }`}>
+              🚨 Emergency Meetings: {Math.max(0, 3 - emergencyCount)} / 3 Remaining
+            </span>
+            {emergencyCount >= 3 && (
+              <p className="text-xs text-red-400 font-bold uppercase tracking-wider mt-1">
+                All 3 emergency meetings have been used!
+              </p>
+            )}
+          </div>
+        )}
+
         {/* The Giant Red Button */}
         <div className="relative w-72 h-72 flex items-center justify-center">
           {/* Base warning stripes */}
@@ -386,15 +425,19 @@ export default function EmergencyScreen() {
             {/* The actual pressable red button */}
             <button 
               onClick={handleCallMeeting}
-              disabled={status === 'LOADING' || status === 'SUCCESS' || joinCode.length !== 6 || cooldown > 0}
+              disabled={status === 'LOADING' || status === 'SUCCESS' || joinCode.length !== 6 || cooldown > 0 || emergencyCount >= 3}
               className={`w-48 h-48 rounded-full border-[8px] z-10 flex flex-col items-center justify-center transition-all duration-150 ${
-                status === 'LOADING' || status === 'SUCCESS' || joinCode.length !== 6 || cooldown > 0
+                status === 'LOADING' || status === 'SUCCESS' || joinCode.length !== 6 || cooldown > 0 || emergencyCount >= 3
                 ? 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed transform translate-y-2 shadow-[0_0_0_#060913]' 
                 : 'bg-danger border-[#990000] shadow-[0_20px_0_#660000,0_0_60px_rgba(255,0,0,0.6)] active:translate-y-4 active:shadow-[0_4px_0_#660000,0_0_30px_rgba(255,0,0,0.4)] hover:brightness-110'
               }`}
             >
               {status === 'LOADING' ? (
                 <Loader2 className="w-16 h-16 text-white animate-spin" />
+              ) : emergencyCount >= 3 ? (
+                <span className="font-black text-gray-400 text-sm uppercase tracking-widest text-center px-2">
+                  0 / 3 LEFT
+                </span>
               ) : cooldown > 0 ? (
                 <span className="font-black text-white text-7xl tracking-tighter">{cooldown}</span>
               ) : (
