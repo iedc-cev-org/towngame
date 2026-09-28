@@ -331,6 +331,7 @@ export default function PrintBadges() {
         })}
       </div>
 
+      {/* Task Stations (TASKS.map) Section - Commented Out
       <div className={`mt-16 print:mt-12 break-before-page ${printFilter === 'badges' ? 'print:hidden' : ''}`}>
         <div className="mb-8 print:hidden">
           <h2 className="text-2xl font-bold">Print Task Stations</h2>
@@ -376,6 +377,7 @@ export default function PrintBadges() {
           })}
         </div>
       </div>
+      */}
 
       <div className={`mt-16 print:mt-12 break-before-page ${printFilter === 'badges' ? 'print:hidden' : ''}`}>
         <div className="mb-8 print:hidden">
