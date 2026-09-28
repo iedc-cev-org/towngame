@@ -63,8 +63,8 @@ export default function PrintBadges() {
 
   const [players, setPlayers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [badgeCount, setBadgeCount] = useState<number>(30);
-  const [printFilter, setPrintFilter] = useState<'all' | 'badges'>('badges');
+  const [printFilter, setPrintFilter] = useState<'all' | 'badges' | 'tasks'>('badges');
+  const [selectedSheet, setSelectedSheet] = useState<number | 'all'>('all');
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -92,23 +92,32 @@ export default function PrintBadges() {
     fetchGame();
   }, [gameId, router]);
 
-  const BADGES_PER_PAGE = 6;
-  const totalPages = Math.ceil(badgeCount / BADGES_PER_PAGE);
-  const badgePages = Array.from({ length: totalPages }, (_, pageIdx) => {
-    const start = pageIdx * BADGES_PER_PAGE;
-    const end = Math.min(start + BADGES_PER_PAGE, badgeCount);
-    return Array.from({ length: end - start }, (_, i) => start + i);
-  });
+  // Unconditionally generate all 30 badges across 5 sheets (strictly 6 badges per sheet)
+  const BADGE_SHEETS = [
+    { page: 1, range: 'Badges 01 – 06', badges: [0, 1, 2, 3, 4, 5] },
+    { page: 2, range: 'Badges 07 – 12', badges: [6, 7, 8, 9, 10, 11] },
+    { page: 3, range: 'Badges 13 – 18', badges: [12, 13, 14, 15, 16, 17] },
+    { page: 4, range: 'Badges 19 – 24', badges: [18, 19, 20, 21, 22, 23] },
+    { page: 5, range: 'Badges 25 – 30', badges: [24, 25, 26, 27, 28, 29] },
+  ];
 
-  const handlePrint = (filter: 'all' | 'badges') => {
+  const handlePrint = (filter: 'all' | 'badges' | 'tasks', sheet: number | 'all' = 'all') => {
     setPrintFilter(filter);
+    setSelectedSheet(sheet);
     setTimeout(() => {
       window.print();
-    }, 150);
+    }, 200);
+  };
+
+  const scrollToSheet = (sheetNum: number) => {
+    const el = document.getElementById(`sheet-page-${sheetNum}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-black bg-white">Loading badges...</div>;
+    return <div className="p-8 text-center text-black bg-white font-bold text-lg">Loading badges...</div>;
   }
 
   return (
@@ -119,11 +128,16 @@ export default function PrintBadges() {
         @media print {
           @page {
             size: A4 portrait;
-            margin: 8mm 10mm;
+            margin: 8mm 8mm;
           }
-          html, body {
+          html, body, #__next, .amongus-container, .badge-sheets-container {
             background: white !important;
             color: black !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            overflow: visible !important;
+            position: static !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
@@ -134,14 +148,16 @@ export default function PrintBadges() {
             break-inside: avoid !important;
             margin: 0 !important;
             padding: 0 !important;
+            display: block !important;
+            height: auto !important;
           }
           .badge-sheet-page {
-            height: 255mm !important;
-            max-height: 255mm !important;
+            height: 260mm !important;
+            max-height: 260mm !important;
             display: grid !important;
             grid-template-columns: repeat(2, 1fr) !important;
             grid-template-rows: repeat(3, 1fr) !important;
-            gap: 6mm !important;
+            gap: 5mm !important;
             padding: 0 !important;
             margin: 0 !important;
             box-sizing: border-box !important;
@@ -150,32 +166,32 @@ export default function PrintBadges() {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
             height: 100% !important;
-            max-height: 80mm !important;
+            max-height: 82mm !important;
             box-sizing: border-box !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: space-between !important;
             align-items: center !important;
-            padding: 3.5mm 4mm !important;
+            padding: 3mm 4mm !important;
             border-width: 3.5px !important;
             border-radius: 6px !important;
           }
           .badge-sheet-card h2 {
-            font-size: 14pt !important;
+            font-size: 13pt !important;
             line-height: 1.1 !important;
-            margin-bottom: 1mm !important;
+            margin-bottom: 0.5mm !important;
           }
           .badge-sheet-card p {
-            font-size: 8pt !important;
-            margin-bottom: 1mm !important;
+            font-size: 7.5pt !important;
+            margin-bottom: 0.5mm !important;
           }
           .badge-sheet-card .qr-container {
             padding: 1.5mm !important;
-            margin: 1mm 0 !important;
+            margin: 0.5mm 0 !important;
           }
           .badge-sheet-card .id-label {
-            font-size: 8.5pt !important;
-            margin-top: 1mm !important;
+            font-size: 8pt !important;
+            margin-top: 0.5mm !important;
           }
         }
       `,
@@ -183,108 +199,136 @@ export default function PrintBadges() {
       />
 
       {/* Control Bar (hidden in print) */}
-      <div className="mb-8 print:hidden bg-gray-50 border-2 border-gray-300 rounded-xl p-5 shadow-sm">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="mb-8 print:hidden bg-gradient-to-r from-gray-50 to-gray-100 border-2 border-gray-300 rounded-2xl p-6 shadow-sm">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div>
-            <h1 className="text-2xl font-black uppercase tracking-wider text-gray-900">
-              Print Player Badges
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-black uppercase tracking-wider text-gray-900">
+                Player Badges
+              </h1>
+              <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-emerald-300">
+                All 30 Badges Ready
+              </span>
+            </div>
             <p className="text-sm text-gray-600 mt-1">
-              Formatted for standard A4 printing — <strong className="text-black font-bold">strictly 6 badges per page</strong> (2 columns × 3 rows).
+              All 30 badges organized across <strong className="text-black font-bold">5 sheets</strong> (strictly 6 badges per A4 page, 2 columns × 3 rows).
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 bg-white px-3 py-1.5 border border-gray-300 rounded-lg text-sm">
-              <span className="font-bold text-gray-700">Badges:</span>
-              <select
-                value={badgeCount}
-                onChange={(e) => setBadgeCount(Number(e.target.value))}
-                className="font-bold text-black bg-transparent outline-none cursor-pointer"
-              >
-                <option value={6}>6 (1 Page)</option>
-                <option value={12}>12 (2 Pages)</option>
-                <option value={18}>18 (3 Pages)</option>
-                <option value={24}>24 (4 Pages)</option>
-                <option value={30}>30 (5 Pages)</option>
-              </select>
-            </div>
-
             <button
-              onClick={() => handlePrint('badges')}
-              className="bg-black hover:bg-gray-800 text-white px-5 py-2.5 rounded-lg font-bold text-sm shadow transition-colors flex items-center gap-2"
+              onClick={() => handlePrint('badges', 'all')}
+              className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-xl font-black text-sm shadow-md transition-all flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
             >
-              Print Badges (6 / Page)
+              🖨️ PRINT ALL 30 BADGES (5 Pages)
             </button>
 
             <button
-              onClick={() => handlePrint('all')}
-              className="bg-white hover:bg-gray-100 text-gray-800 border-2 border-gray-400 px-4 py-2 rounded-lg font-bold text-sm transition-colors"
+              onClick={() => handlePrint('tasks')}
+              className="bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 hover:border-gray-400 px-4 py-3 rounded-xl font-bold text-sm transition-all shadow-sm"
             >
-              Print All Sheets
+              Print Tasks & PINs
+            </button>
+
+            <button
+              onClick={() => handlePrint('all', 'all')}
+              className="bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 hover:border-gray-400 px-4 py-3 rounded-xl font-bold text-sm transition-all shadow-sm"
+            >
+              Print Everything
             </button>
           </div>
         </div>
+
+        {/* Quick jump to sheet */}
+        <div className="mt-5 pt-4 border-t border-gray-200 flex flex-wrap items-center gap-2 text-xs">
+          <span className="font-bold text-gray-500 uppercase tracking-wider mr-2">Jump to Sheet:</span>
+          {BADGE_SHEETS.map((s) => (
+            <button
+              key={`jump-${s.page}`}
+              onClick={() => scrollToSheet(s.page)}
+              className="px-3 py-1.5 bg-white border border-gray-300 hover:border-black rounded-lg font-bold text-gray-700 hover:text-black transition-colors"
+            >
+              Sheet {s.page} ({s.range})
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Badge Sheets (6 badges per page) */}
-      <div className="badge-sheets-container">
-        {badgePages.map((page, pageIdx) => (
-          <div key={`badge-sheet-${pageIdx}`} className="badge-sheet-wrapper mb-10 print:mb-0">
-            <div className="print:hidden flex items-center justify-between text-xs font-bold text-gray-500 uppercase tracking-widest mb-3 pb-1 border-b border-gray-200">
-              <span>Page {pageIdx + 1} of {badgePages.length}</span>
-              <span>Badges {page[0] + 1} – {page[page.length - 1] + 1} (6 Badges per Sheet)</span>
-            </div>
+      {/* Badge Sheets (All 5 sheets, 6 badges each = 30 badges total) */}
+      <div className={`badge-sheets-container ${printFilter === 'tasks' ? 'print:hidden' : ''}`}>
+        {BADGE_SHEETS.map((sheet) => {
+          const isHiddenInPrint = selectedSheet !== 'all' && selectedSheet !== sheet.page;
+          return (
+            <div
+              key={`badge-sheet-${sheet.page}`}
+              id={`sheet-page-${sheet.page}`}
+              className={`badge-sheet-wrapper mb-12 print:mb-0 ${isHiddenInPrint ? 'print:hidden' : ''}`}
+            >
+              {/* Sheet Header */}
+              <div className="print:hidden flex items-center justify-between bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 text-xs font-bold text-gray-800 uppercase tracking-widest mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="bg-black text-white px-2 py-0.5 rounded text-[10px]">SHEET {sheet.page} OF 5</span>
+                  <span>{sheet.range} (6 Badges)</span>
+                </div>
+                <button
+                  onClick={() => handlePrint('badges', sheet.page)}
+                  className="bg-white hover:bg-gray-50 text-black border border-gray-300 hover:border-black px-2.5 py-1 rounded text-[11px] font-bold transition-colors"
+                >
+                  Print Only Sheet {sheet.page}
+                </button>
+              </div>
 
-            <div className="badge-sheet-page grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {page.map((i) => {
-                const badgeNum = (i + 1).toString().padStart(2, '0');
-                const uuid = `00000000-0000-0000-0000-0000000000${badgeNum}`;
-                const colorInfo = getPlayerColor(uuid);
-                return (
-                  <div
-                    key={`badge-${i + 1}`}
-                    className="badge-sheet-card border-4 p-4 flex flex-col items-center justify-between break-inside-avoid shadow-sm print:shadow-none bg-white rounded-xl relative min-h-[220px]"
-                    style={{ borderColor: colorInfo.hex }}
-                  >
-                    <div className="text-center w-full">
-                      <h2
-                        className="text-xl font-black uppercase tracking-widest truncate w-full text-center"
-                        style={{ color: colorInfo.hex }}
-                      >
-                        BADGE {i + 1}
-                      </h2>
-                      <p
-                        className="text-[10px] font-bold uppercase tracking-widest"
-                        style={{ color: colorInfo.hex }}
-                      >
-                        {colorInfo.name}
-                      </p>
-                    </div>
-
+              {/* 6 Badges Grid (2 cols x 3 rows) */}
+              <div className="badge-sheet-page grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {sheet.badges.map((i) => {
+                  const badgeNum = (i + 1).toString().padStart(2, '0');
+                  const uuid = `00000000-0000-0000-0000-0000000000${badgeNum}`;
+                  const colorInfo = getPlayerColor(uuid);
+                  return (
                     <div
-                      className="qr-container bg-white p-2 border-2 rounded-lg my-2"
+                      key={`badge-${i + 1}`}
+                      className="badge-sheet-card border-4 p-4 flex flex-col items-center justify-between break-inside-avoid shadow-sm print:shadow-none bg-white rounded-xl relative min-h-[220px]"
                       style={{ borderColor: colorInfo.hex }}
                     >
-                      <QRCodeSVG
-                        value={uuid}
-                        size={105}
-                        level="M"
-                        includeMargin={false}
-                      />
-                    </div>
+                      <div className="text-center w-full">
+                        <h2
+                          className="text-xl font-black uppercase tracking-widest truncate w-full text-center"
+                          style={{ color: colorInfo.hex }}
+                        >
+                          BADGE {i + 1}
+                        </h2>
+                        <p
+                          className="text-[10px] font-bold uppercase tracking-widest"
+                          style={{ color: colorInfo.hex }}
+                        >
+                          {colorInfo.name}
+                        </p>
+                      </div>
 
-                    <div className="id-label text-center">
-                      <span className="text-[11px] text-gray-600 font-mono font-bold tracking-wider">
-                        ID: {badgeNum}
-                      </span>
+                      <div
+                        className="qr-container bg-white p-2 border-2 rounded-lg my-2"
+                        style={{ borderColor: colorInfo.hex }}
+                      >
+                        <QRCodeSVG
+                          value={uuid}
+                          size={105}
+                          level="M"
+                          includeMargin={false}
+                        />
+                      </div>
+
+                      <div className="id-label text-center">
+                        <span className="text-[11px] text-gray-600 font-mono font-bold tracking-wider">
+                          ID: {badgeNum}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className={`mt-16 print:mt-12 break-before-page ${printFilter === 'badges' ? 'print:hidden' : ''}`}>
