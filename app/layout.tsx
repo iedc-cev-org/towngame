@@ -4,8 +4,8 @@ import { Toaster } from "sonner"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "IEDC CEV | Game Arena",
-  description: "Enter the IEDC CEV Game Arena — compete, earn, and climb the ranks.",
+  title: "IEDC CEV | GameVerse",
+  description: "Enter the IEDC CEV GameVerse — compete, earn, and climb the ranks.",
   icons: {
     icon: "/tvc.png",
   },

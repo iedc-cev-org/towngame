@@ -82,7 +82,7 @@ export default function LoginPage() {
           </div>
           
           <h1 className="comic-title text-4xl sm:text-6xl lg:text-8xl text-white mb-6 transform rotate-2">
-            WELCOME<br/>TO THE PORTAL!
+            WELCOME<br/>TO THE GameVerse!
           </h1>
           
           <div className="bg-white p-4 sm:p-6 border-4 border-[#000] shadow-[6px_6px_0px_#000] transform -rotate-1 max-w-md">

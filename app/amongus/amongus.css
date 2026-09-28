@@ -1,0 +1,223 @@
+/* Among Us Theme Variables & Scoped Styles */
+:root {
+  --color-background: #0b0d21;
+  --color-foreground: #e8eaf6;
+  --color-primary: #c51111;
+  --color-primary-hover: #e01717;
+  --color-secondary: #00e5ff;
+  --color-secondary-hover: #40efff;
+  --color-accent: #f6f657;
+  --color-card: #131a35;
+  --color-card-border: #1a2340;
+  --color-muted: #64748b;
+  --color-danger: #c51111;
+  --color-success: #22c55e;
+  --shadow-au-btn: 0 4px 0 #060913;
+  --shadow-au-btn-hover: 0 2px 0 #060913;
+  --shadow-au-panel: 0 6px 0 #0a1025, inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.amongus-container {
+  background-color: #0b0d21;
+  color: #e8eaf6;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 15%, rgba(255, 255, 255, 0.15) 50%, transparent 100%),
+    radial-gradient(1px 1px at 30% 65%, rgba(255, 255, 255, 0.1) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 55% 28%, rgba(255, 255, 255, 0.12) 50%, transparent 100%),
+    radial-gradient(1px 1px at 72% 80%, rgba(255, 255, 255, 0.08) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 88% 42%, rgba(255, 255, 255, 0.14) 50%, transparent 100%),
+    radial-gradient(1px 1px at 45% 90%, rgba(255, 255, 255, 0.06) 50%, transparent 100%),
+    radial-gradient(1px 1px at 15% 55%, rgba(255, 255, 255, 0.08) 50%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 95% 10%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+  background-size: 200px 200px;
+}
+
+/* Among Us Style Utilities */
+.au-title {
+  font-weight: 900 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.6);
+  text-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(0, 229, 255, 0.15);
+}
+
+.au-btn {
+  border: 3px solid rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.05s ease-out !important;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.au-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.12), transparent);
+  border-radius: 11px 11px 50% 50%;
+  pointer-events: none;
+}
+
+.au-btn:active,
+.au-btn:active:not(:disabled) {
+  transform: translateY(4px) !important;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+.au-panel {
+  background: linear-gradient(145deg, #131a35 0%, #0e1428 100%);
+  border: 2px solid #1a2340;
+  box-shadow: 0 6px 0 #0a1025, inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes laser-scan {
+  0% { top: 0; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.animate-laser {
+  animation: laser-scan 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes task-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); background-color: rgba(34, 197, 94, 0.15); }
+  100% { transform: scale(1); }
+}
+
+.animate-task-pop {
+  animation: task-pop 0.3s ease-out forwards;
+}
+
+@keyframes glitch {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 2px) }
+  40% { transform: translate(-2px, -2px) }
+  60% { transform: translate(2px, 2px) }
+  80% { transform: translate(2px, -2px) }
+  100% { transform: translate(0) }
+}
+
+.animate-glitch {
+  animation: glitch 0.2s ease-in-out;
+}
+
+@keyframes radar-sweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-radar {
+  animation: radar-sweep 4s linear infinite;
+}
+
+@keyframes eject-float {
+  0% { transform: translateX(-100vw) rotate(-10deg); opacity: 0; }
+  15% { transform: translateX(-20vw) rotate(-5deg); opacity: 1; }
+  40% { transform: translateX(0vw) rotate(0deg); opacity: 1; }
+  70% { transform: translateX(0vw) rotate(0deg); opacity: 1; }
+  85% { transform: translateX(20vw) rotate(5deg); opacity: 1; }
+  100% { transform: translateX(100vw) rotate(10deg); opacity: 0; }
+}
+
+.animate-eject {
+  animation: eject-float 7s linear forwards;
+}
+
+/* Emergency Meeting Alert Animations */
+@keyframes meeting-flash {
+  0%, 100% { background-color: #1a0000; }
+  10% { background-color: #cc0000; }
+  20% { background-color: #1a0000; }
+  30% { background-color: #ff0000; }
+  40% { background-color: #330000; }
+  50% { background-color: #dd0000; }
+  60% { background-color: #0a0000; }
+  70% { background-color: #ee0000; }
+  80% { background-color: #200000; }
+  90% { background-color: #bb0000; }
+}
+
+.meeting-flash-bg {
+  animation: meeting-flash 0.6s ease-in-out infinite;
+}
+
+.meeting-alert-screen {
+  z-index: 100;
+}
+
+@keyframes meeting-icon-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.8; }
+}
+
+.meeting-alert-icon {
+  animation: meeting-icon-pulse 0.5s ease-in-out infinite;
+}
+
+@keyframes meeting-title-shake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-8px); }
+  20% { transform: translateX(8px); }
+  30% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  50% { transform: translateX(-4px); }
+  60% { transform: translateX(4px); }
+  70% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+  90% { transform: translateX(-1px); }
+}
+
+.meeting-alert-title {
+  animation: meeting-title-shake 0.4s ease-in-out infinite;
+}
+
+@keyframes meeting-instruction-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.meeting-alert-instruction {
+  animation: meeting-instruction-bounce 0.8s ease-in-out infinite;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(0, 229, 255, 0.3), 0 0 15px rgba(0, 229, 255, 0.1); }
+  50% { box-shadow: 0 0 15px rgba(0, 229, 255, 0.5), 0 0 30px rgba(0, 229, 255, 0.2); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}

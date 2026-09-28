@@ -10,6 +10,20 @@
   --color-comic-purple: #af52de;
   --font-bangers: 'Bangers', cursive;
   --font-sans: 'Comic Neue', cursive, sans-serif;
+
+  /* Among Us theme tokens */
+  --color-background: #0b0d21;
+  --color-foreground: #e8eaf6;
+  --color-primary: #c51111;
+  --color-primary-hover: #e01717;
+  --color-secondary: #00e5ff;
+  --color-secondary-hover: #40efff;
+  --color-accent: #f6f657;
+  --color-card: #131a35;
+  --color-card-border: #1a2340;
+  --color-muted: #64748b;
+  --color-danger: #c51111;
+  --color-success: #22c55e;
 }
 
 html {

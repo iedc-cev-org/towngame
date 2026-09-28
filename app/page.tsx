@@ -78,39 +78,41 @@ export default function GamePortal() {
         {/* Game Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12 w-full max-w-6xl">
           
-          {/* Game 1: Town Games */}
-          <Link href="/town-game" className="block group">
-            <div className="comic-panel h-full p-6 sm:p-8 bg-[#34c759] transform transition-transform group-hover:scale-105 group-hover:-rotate-2 flex flex-col relative overflow-hidden">
-              <div className="absolute top-4 right-4 bg-white font-bangers text-xl px-3 py-1 border-4 border-[#000] shadow-[2px_2px_0px_#000] transform rotate-6">
-                LIVE
-              </div>
-              <div className="action-burst w-20 h-20 bg-white border-4 border-[#000] flex items-center justify-center mb-6 shadow-[4px_4px_0px_#000]">
-                <Swords className="w-10 h-10 text-[#34c759]" />
-              </div>
-              <h2 className="comic-title text-4xl sm:text-5xl text-white mb-4">SELL A THING</h2>
-              <p className="font-bold text-lg bg-white p-3 border-4 border-[#000] mb-6 flex-1 shadow-[4px_4px_0px_#000]">
-                Pitch products, buy from friends, and dominate the sales leaderboard in this chaotic marketplace simulator!
-              </p>
-              <div className="comic-btn comic-btn-red text-center !py-4 w-full text-2xl mt-auto animate-attract flex items-center justify-center gap-2 hover:animate-none hover:scale-110 hover:-translate-y-1">
-                <Play className="w-6 h-6 fill-current" />
-                <span>PLAY NOW!</span>
-              </div>
-            </div>
-          </Link>
-
-          {/* Game 2: Unavailable */}
+          {/* Game 1: Sell A Thing (Disabled) */}
           <div className="comic-panel p-6 sm:p-8 bg-gray-200 transform flex flex-col relative border-gray-400 border-dashed border-4 shadow-none opacity-60 grayscale scale-95 pointer-events-none">
             <div className="action-burst w-16 h-16 bg-gray-300 border-4 border-gray-500 flex items-center justify-center mb-6">
               <Lock className="w-8 h-8 text-gray-600" />
             </div>
-            <h2 className="comic-title text-3xl sm:text-4xl text-gray-700 mb-4">MYSTERY ARENA</h2>
+            <h2 className="comic-title text-3xl sm:text-4xl text-gray-700 mb-4">SELL A THING</h2>
             <p className="font-bold text-base bg-gray-100 p-3 border-4 border-gray-400 mb-6 flex-1 text-gray-500">
-              Currently under construction. Check back later for new challenges!
+              Pitch products, buy from friends, and dominate the sales leaderboard in this chaotic marketplace simulator!
             </p>
             <div className="comic-btn bg-gray-400 text-gray-600 text-center !py-3 w-full text-xl mt-auto border-gray-500 shadow-none transform-none">
               <span>UNAVAILABLE</span>
             </div>
           </div>
+
+          {/* Game 2: Among Us IRL */}
+          <Link href="/amongus" className="block group">
+            <div className="comic-panel h-full p-6 sm:p-8 bg-[#ff3b30] transform transition-transform group-hover:scale-105 group-hover:rotate-2 flex flex-col relative overflow-hidden">
+              <div className="absolute top-4 right-4 bg-white font-bangers text-xl px-3 py-1 border-4 border-[#000] shadow-[2px_2px_0px_#000] transform rotate-6 text-[#000]">
+                LIVE
+              </div>
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-[#0b0d21] border-4 border-[#000] flex items-center justify-center mb-6 shadow-[4px_4px_0px_#000] rounded-2xl transform -rotate-3 overflow-hidden p-1.5 group-hover:scale-105 group-hover:rotate-2 transition-transform">
+                <img src="/icon-512.png" alt="Among Us Logo" className="w-full h-full object-contain rounded-xl" />
+              </div>
+              <h2 className="comic-title text-4xl sm:text-5xl text-white mb-4">
+                AMONG <span className="text-[#ff3b30]">US</span> IRL
+              </h2>
+              <p className="font-bold text-lg bg-white p-3 border-4 border-[#000] mb-6 flex-1 shadow-[4px_4px_0px_#000]">
+                Find the Impostors or complete all campus tasks with QR codes before the crew gets eliminated!
+              </p>
+              <div className="comic-btn comic-btn-yellow text-center !py-4 w-full text-2xl mt-auto animate-attract flex items-center justify-center gap-2 hover:animate-none hover:scale-110 hover:-translate-y-1">
+                <Play className="w-6 h-6 fill-current" />
+                <span>PLAY NOW!</span>
+              </div>
+            </div>
+          </Link>
 
           {/* Game 3: Unavailable */}
           <div className="comic-panel p-6 sm:p-8 bg-gray-200 transform flex flex-col relative border-gray-400 border-dashed border-4 shadow-none opacity-60 grayscale scale-95 pointer-events-none">
@@ -131,7 +133,7 @@ export default function GamePortal() {
         {/* Footer */}
         <div className="mt-16 sm:mt-24 text-center bg-white border-4 border-[#000] px-4 sm:px-8 py-4 shadow-[4px_4px_0px_#000] transform -rotate-1 w-full max-w-sm sm:max-w-none">
           <p className="text-sm sm:text-xl font-bangers tracking-widest text-[#000] break-words">
-            A PRODUCT OF <span className="text-[#32ade6]">IEDC CEV</span> • TOWN GAMES ECOSYSTEM
+            A PRODUCT OF <span className="text-[#32ade6]">IEDC CEV</span> • GameVerseES ECOSYSTEM
           </p>
         </div>
 
