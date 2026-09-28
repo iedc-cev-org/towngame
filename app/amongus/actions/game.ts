@@ -113,7 +113,7 @@ export async function startGame(gameId: string, hostToken: string) {
       { location_id: 'task-fruit-duel', name: 'Fruit Duel', type: 'PIN', pin: '3434' },
     ];
 
-    const TASKS_PER_PLAYER = 4;
+    const TASKS_PER_PLAYER = 7;
     const tasksToInsert: any[] = [];
     
     // Total crewmate tasks for global progress
