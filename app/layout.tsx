@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "IEDC CEV | GameVerse",
   description: "Enter the IEDC CEV GameVerse — compete, earn, and climb the ranks.",
   icons: {
-    icon: "/tvc.png",
+    icon: "/GAMEVERSE.png",
   },
 }
 

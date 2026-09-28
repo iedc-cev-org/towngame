@@ -24,8 +24,8 @@ export default function GamePortal() {
       <div className="sticky top-0 z-50 border-b-4 border-[#000] bg-white shadow-[0_4px_0px_#000]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 sm:w-14 sm:h-14 bg-[#ff3b30] border-4 border-[#000] flex items-center justify-center shadow-[4px_4px_0px_#000] transform -rotate-2 overflow-hidden p-1">
-              <img src="/tvc_w.png" alt="Logo" className="w-full h-full object-contain" />
+            <div className="w-10 h-10 sm:w-14 sm:h-14 bg-white border-4 border-[#000] flex items-center justify-center shadow-[4px_4px_0px_#000] transform -rotate-2 overflow-hidden p-1">
+              <img src="/GAMEVERSE.png" alt="GameVerse Logo" className="w-full h-full object-contain" />
             </div>
             <span className="comic-title text-2xl sm:text-3xl text-center">TOWN GAMES PORTAL</span>
           </div>

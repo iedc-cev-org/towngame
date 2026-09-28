@@ -77,8 +77,8 @@ export default function LoginPage() {
         </Link>
 
         <div className="flex-1 flex flex-col justify-center mt-8 sm:mt-12 md:mt-0 relative">
-          <div className="w-24 h-24 sm:w-32 sm:h-32 bg-[#32ade6] border-4 border-[#000] shadow-[6px_6px_0px_#000] flex items-center justify-center mb-6 sm:mb-8 transform -rotate-6 p-3">
-            <img src="/tvc_w.png" alt="Logo" className="w-full h-full object-contain" />
+          <div className="w-24 h-24 sm:w-32 sm:h-32 bg-white border-4 border-[#000] shadow-[6px_6px_0px_#000] flex items-center justify-center mb-6 sm:mb-8 transform -rotate-6 p-3">
+            <img src="/GAMEVERSE.png" alt="GameVerse Logo" className="w-full h-full object-contain" />
           </div>
           
           <h1 className="comic-title text-4xl sm:text-6xl lg:text-8xl text-white mb-6 transform rotate-2">

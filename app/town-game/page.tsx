@@ -31,7 +31,7 @@ export default function HomePage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] min-w-[300px] min-h-[300px] bg-gray-200 action-burst z-[-1] opacity-60"></div>
 
           <div className="inline-flex items-center gap-3 px-4 sm:px-6 py-2 bg-gray-600 border-4 border-[#000] shadow-[4px_4px_0px_#000] mb-8 transform -rotate-3 text-white">
-            <img src="/tvc_w.png" alt="Logo" className="w-6 h-6 sm:w-8 sm:h-8 object-contain opacity-75" />
+            <img src="/GAMEVERSE.png" alt="GameVerse Logo" className="w-6 h-6 sm:w-8 sm:h-8 object-contain bg-white rounded p-0.5 opacity-90" />
             <span className="font-bangers text-xl sm:text-2xl tracking-[0.1em]">SELL A THING • DISABLED</span>
           </div>
 
